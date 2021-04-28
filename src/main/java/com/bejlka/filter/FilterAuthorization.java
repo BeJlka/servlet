@@ -21,6 +21,7 @@ public class FilterAuthorization implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
 //        String originalInput = "<" + login + ">:<" + password + ">";
 //        String encodedString = Base64.getEncoder().encodeToString(originalInput.getBytes());
+//        token = "PGFkbWluPjo8MTIzND4="
     }
 
     @Override
@@ -28,31 +29,25 @@ public class FilterAuthorization implements Filter {
         log.info("Enter authorization");
         String auth = ((HttpServletRequest) servletRequest).getHeader("Authorization");
 
-        if (auth == null) {
-            log.info("authorization failed.\t Token: null");
-            HttpServletResponse response = (HttpServletResponse) servletResponse;
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{msg: 'ошибка авторизации'}");
-            return;
+        if (auth != null) {
+            byte[] s = Base64.getDecoder().decode(auth.split(" ")[1]);
+            String loginPassword = "<" + login + ">:<" + password + ">";
+            if (loginPassword.equals(new String(s))) {
+                log.info("authorization success");
+                filterChain.doFilter(servletRequest, servletResponse);
+                log.info("Exit authorization");
+                return;
+            }
         }
 
-        byte[] s = Base64.getDecoder().decode(auth.split(" ")[1]);
-        String loginPassword = "<" + login + ">:<" + password + ">";
-        if (loginPassword.equals(new String(s))) {
-            log.info("authorization success");
-            filterChain.doFilter(servletRequest, servletResponse);
-        } else {
-            log.info("authorization failed.\t Token invalid");
-            HttpServletResponse response = (HttpServletResponse) servletResponse;
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{msg: 'ошибка авторизации'}");
-            return;
-        }
+        log.info("authorization failed.\t Token invalid");
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write("{msg: 'ошибка авторизации'}");
         log.info("Exit authorization");
+
     }
 
     @Override
