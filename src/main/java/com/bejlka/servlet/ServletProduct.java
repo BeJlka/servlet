@@ -12,85 +12,65 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/product")
+@WebServlet("/products")
 public class ServletProduct extends HttpServlet {
 
-  private MapProduct mapProduct;
+    private MapProduct mapProduct;
 
-  @Override
-  public void init() throws ServletException {
-    mapProduct = MapProduct.getInstance();
-  }
-
-  @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    System.out.println("Enter doGet");
-
-    resp.setContentType("application/json");
-    resp.setCharacterEncoding("UTF-8");
-    ObjectMapper mapper = new ObjectMapper();
-    if (req.getParameter("id") != null) {
-      String jsonString = mapper.writeValueAsString(mapProduct.getProductMap().get(Integer.parseInt(req.getParameter("id"))));
-      resp.getWriter().print(jsonString);
-      return;
+    @Override
+    public void init() throws ServletException {
+        mapProduct = new MapProduct();
     }
-    System.out.println(mapProduct.getProductMap());
-    String jsonString = mapper.writeValueAsString(mapProduct.getProductMap());
-    resp.getWriter().print(jsonString);
 
-    System.out.println("Exit doGet");
-  }
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        ObjectMapper mapper = new ObjectMapper();
+        if (req.getParameter("id") != null) {
+            String jsonString = mapper.writeValueAsString(mapProduct.getProductMap().get(Integer.parseInt(req.getParameter("id"))));
+            resp.getWriter().print(jsonString);
+            return;
+        }
 
-  @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
-    System.out.println("Enter doPost");
+        String jsonString = mapper.writeValueAsString(mapProduct.getProductMap());
+        resp.getWriter().print(jsonString);
+    }
 
-    req.setCharacterEncoding("UTF-8");
-    ObjectMapper objectMapper = new ObjectMapper();
-    Product product = objectMapper.readValue(ServletUtil.getBody(req), Product.class);
-    mapProduct.addProduct(product);
-    String jsonString = objectMapper.writeValueAsString(mapProduct.getProductMap());
-    System.out.println(mapProduct.getProductMap());
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        ObjectMapper objectMapper = new ObjectMapper();
+        Product product = objectMapper.readValue(ServletUtil.getBody(req), Product.class);
+        mapProduct.addProduct(product);
+        String jsonString = objectMapper.writeValueAsString(mapProduct.getProductMap());
 
-    resp.setContentType("application/json");
-    resp.setCharacterEncoding("UTF-8");
-    resp.getWriter().write(jsonString);
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        resp.getWriter().write(jsonString);
+    }
 
-    System.out.println("Exit doPost");
-  }
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        mapProduct.updateProduct(Integer.parseInt(req.getParameter("id")),
+                objectMapper.readValue(ServletUtil.getBody(req), Product.class));
 
-  @Override
-  protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    System.out.println("Enter doPut");
+        String jsonString = objectMapper.writeValueAsString(mapProduct.getProductMap());
 
-    ObjectMapper objectMapper = new ObjectMapper();
-    mapProduct.updateProduct(Integer.parseInt(req.getParameter("id")),
-        objectMapper.readValue(ServletUtil.getBody(req), Product.class));
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        resp.getWriter().write(jsonString);
+    }
 
-    String jsonString = objectMapper.writeValueAsString(mapProduct.getProductMap());
-    System.out.println(mapProduct.getProductMap());
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        mapProduct.deleteProduct(Integer.parseInt(req.getParameter("id")));
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(mapProduct.getProductMap());
 
-    resp.setContentType("application/json");
-    resp.setCharacterEncoding("UTF-8");
-    resp.getWriter().write(jsonString);
-
-    System.out.println("Exit doPut");
-  }
-
-  @Override
-  protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    System.out.println("Enter doDelete");
-
-    mapProduct.deleteProduct(Integer.parseInt(req.getParameter("id")));
-    ObjectMapper objectMapper = new ObjectMapper();
-    String jsonString = objectMapper.writeValueAsString(mapProduct.getProductMap());
-    System.out.println(mapProduct.getProductMap());
-
-    resp.setContentType("application/json");
-    resp.setCharacterEncoding("UTF-8");
-    resp.getWriter().write(jsonString);
-
-    System.out.println("Exit doDelete");
-  }
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        resp.getWriter().write(jsonString);
+    }
 }
