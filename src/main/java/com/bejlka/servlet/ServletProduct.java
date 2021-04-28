@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/products")
+@WebServlet("/*")
 public class ServletProduct extends HttpServlet {
 
     private MapProduct mapProduct;

@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @Log4j
-@WebFilter("/products")
+@WebFilter(filterName = "Product", urlPatterns = "/*")
 public class FilterProduct implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -30,7 +30,6 @@ public class FilterProduct implements Filter {
         if (request.getMethod().equals("POST") || request.getMethod().equals("PUT")) {
             stringBuilder.append("\tBody: ").append(ServletUtil.getBody(wrappedRequest));
         }
-
         log.debug(stringBuilder);
         filterChain.doFilter(wrappedRequest, servletResponse);
         log.info("Exit logger");
