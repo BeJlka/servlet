@@ -1,5 +1,6 @@
 package com.bejlka.filter;
 
+import com.bejlka.util.ServletUtil;
 import lombok.extern.log4j.Log4j;
 
 import javax.servlet.*;
@@ -12,7 +13,6 @@ import java.util.Base64;
 @Log4j
 @WebFilter(filterName = "Authorization", urlPatterns = "/products")
 public class FilterAuthorization implements Filter {
-
 
     private final String login = "admin";
     private final String password = "1234";
@@ -40,18 +40,14 @@ public class FilterAuthorization implements Filter {
             }
         }
 
-        log.info("authorization failed.\t Token invalid");
+        log.info("authorization failed. Token invalid");
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write("{msg: 'ошибка авторизации'}");
+        ServletUtil.respJson(response, "{msg: 'ошибка авторизации'}");
         log.info("Exit authorization");
-
     }
 
     @Override
     public void destroy() {
-
     }
 }

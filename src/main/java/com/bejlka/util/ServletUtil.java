@@ -1,6 +1,7 @@
 package com.bejlka.util;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +18,12 @@ public class ServletUtil {
                 stringBuilder.append(line);
             }
         }
-
         return stringBuilder.toString();
+    }
+
+    public static void respJson(HttpServletResponse resp, String json) throws IOException {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        resp.getWriter().write(json);
     }
 }

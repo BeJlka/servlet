@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/*")
+@WebServlet("/products")
 public class ServletProduct extends HttpServlet {
 
     private MapProduct mapProduct;
@@ -24,30 +24,23 @@ public class ServletProduct extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
         ObjectMapper mapper = new ObjectMapper();
         if (req.getParameter("id") != null) {
             String jsonString = mapper.writeValueAsString(mapProduct.getProductMap().get(Integer.parseInt(req.getParameter("id"))));
-            resp.getWriter().print(jsonString);
+            ServletUtil.respJson(resp, jsonString);
             return;
         }
-
         String jsonString = mapper.writeValueAsString(mapProduct.getProductMap());
-        resp.getWriter().print(jsonString);
+        ServletUtil.respJson(resp, jsonString);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setCharacterEncoding("UTF-8");
         ObjectMapper objectMapper = new ObjectMapper();
         Product product = objectMapper.readValue(ServletUtil.getBody(req), Product.class);
         mapProduct.addProduct(product);
         String jsonString = objectMapper.writeValueAsString(mapProduct.getProductMap());
-
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        resp.getWriter().write(jsonString);
+        ServletUtil.respJson(resp, jsonString);
     }
 
     @Override
@@ -55,12 +48,8 @@ public class ServletProduct extends HttpServlet {
         ObjectMapper objectMapper = new ObjectMapper();
         mapProduct.updateProduct(Integer.parseInt(req.getParameter("id")),
                 objectMapper.readValue(ServletUtil.getBody(req), Product.class));
-
         String jsonString = objectMapper.writeValueAsString(mapProduct.getProductMap());
-
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        resp.getWriter().write(jsonString);
+        ServletUtil.respJson(resp, jsonString);
     }
 
     @Override
@@ -68,9 +57,6 @@ public class ServletProduct extends HttpServlet {
         mapProduct.deleteProduct(Integer.parseInt(req.getParameter("id")));
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(mapProduct.getProductMap());
-
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        resp.getWriter().write(jsonString);
+        ServletUtil.respJson(resp, jsonString);
     }
 }

@@ -17,7 +17,7 @@ public class MapProduct {
     }
 
     public void addProduct(Product product) {
-        productMap.put(id.incrementAndGet(), product);
+        productMap.put(id.getAndIncrement(), product);
     }
 
     public void updateProduct(Integer key, Product product) {

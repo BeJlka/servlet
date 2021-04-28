@@ -13,7 +13,6 @@ import java.io.IOException;
 public class FilterProduct implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
     }
 
     @Override
@@ -35,9 +34,7 @@ public class FilterProduct implements Filter {
         log.info("Exit logger");
     }
 
-
     @Override
     public void destroy() {
-
     }
 }
